@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String?       @unique
+  passwordHash   String?
+  role           String        @default("user")
+  walletAddress  String?       @unique
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  oauthTokens    OAuthToken[]
+  healthData     HealthData[]
+  healthRaw      HealthRaw[]
+}
+
+model OAuthToken {
+  id            String    @id @default(uuid())
+  userId        String
+  provider      String
+  accessToken   String
+  refreshToken  String
+  expiryDate    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model HealthData {
+  id         String    @id @default(uuid())
+  userId     String
+  steps      Int?
+  calories   Int?
+  bpmAvg     Float?
+  bpmMin     Float?
+  bpmMax     Float?
+  day        DateTime
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+}
+
+model HealthRaw {
+  id         String    @id @default(uuid())
+  userId     String
+  rawJson    Json
+  timestamp  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

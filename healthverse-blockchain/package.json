@@ -1,0 +1,32 @@
+{
+  "name": "healthverse-blockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy_all.ts --network localhost",
+    "deploy:step": "hardhat run scripts/deployment/01_deploy_token.ts --network localhost && hardhat run scripts/deployment/02_deploy_oracle.ts --network localhost && hardhat run scripts/deployment/03_deploy_core.ts --network localhost && hardhat run scripts/deployment/04_setup_contracts.ts --network localhost",
+    "deploy:local": "hardhat run scripts/deployment/01_deploy_token.ts --network localhost",
+    "node": "hardhat node",
+    "clean": "hardhat clean"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@types/node": "^24.10.1",
+    "dotenv": "^17.2.3",
+    "hardhat": "^2.22.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
+  }
+}
