@@ -14,9 +14,13 @@ import { logger } from "./utils/logger.js";
 import authRoutes from "./routes/auth.routes.js";
 import fitDataRoutes from "./routes/fitdata.routes.js";
 import healthRoutes from "./routes/health.routes.js";
+import blockchainRoutes from "./routes/blockchain.routes.js";
 
 // Middleware
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+
+// Services
+import blockchainService from "./services/blockchain.service.js";
 
 // Initialize environment
 validateEnv();
@@ -48,7 +52,7 @@ app.use(compression());
 
 // ==================== BODY PARSING MIDDLEWARE ====================
 
-app.use(express.json({ 
+app.use(express.json({
   limit: '10mb', // Prevent large payload attacks
   verify: (req, res, buf) => {
     try {
@@ -59,9 +63,9 @@ app.use(express.json({
   }
 }));
 
-app.use(express.urlencoded({ 
-  extended: true, 
-  limit: '10mb' 
+app.use(express.urlencoded({
+  extended: true,
+  limit: '10mb'
 }));
 
 app.use(cookieParser());
@@ -87,7 +91,7 @@ const sessionConfig = {
     })
   },
   store: // In production, use a proper session store like Redis
-    config.nodeEnv === 'production' 
+    config.nodeEnv === 'production'
       ? null // Add Redis store here for production
       : undefined // Use memory store for development
 };
@@ -98,7 +102,7 @@ app.use(session(sessionConfig));
 
 app.use((req, res, next) => {
   const start = Date.now();
-  
+
   // Log request
   logger.info('Incoming request', {
     method: req.method,
@@ -111,7 +115,7 @@ app.use((req, res, next) => {
   // Log response when finished
   res.on('finish', () => {
     const duration = Date.now() - start;
-    
+
     logger.info('Request completed', {
       method: req.method,
       url: req.url,
@@ -142,6 +146,7 @@ app.get('/health', (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/fitdata", fitDataRoutes);
 app.use("/health", healthRoutes);
+app.use("/blockchain", blockchainRoutes);
 
 // ==================== ROOT ENDPOINT ====================
 
@@ -154,8 +159,9 @@ app.get("/", (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       auth: "/auth",
-      fitdata: "/fitdata", 
+      fitdata: "/fitdata",
       health: "/health",
+      blockchain: "/blockchain",
       documentation: "/docs" // You can add API docs later
     }
   });
@@ -173,7 +179,7 @@ app.use(errorHandler);
 
 const gracefulShutdown = (signal) => {
   logger.info(`Received ${signal}, starting graceful shutdown...`);
-  
+
   // Give ongoing requests time to complete
   setTimeout(() => {
     process.exit(0);
@@ -188,6 +194,15 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 logger.info('Express application configured successfully', {
   environment: config.nodeEnv,
   nodeVersion: process.version
+});
+
+// Initialize blockchain service on startup
+blockchainService.initialize().then((connected) => {
+  if (connected) {
+    logger.info('Blockchain service connected');
+  } else {
+    logger.warn('Blockchain service not connected - running in mock mode');
+  }
 });
 
 export default app;
