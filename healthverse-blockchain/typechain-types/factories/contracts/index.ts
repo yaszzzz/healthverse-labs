@@ -5,4 +5,3 @@ export * as core from "./core";
 export * as interfaces from "./interfaces";
 export * as oracles from "./oracles";
 export * as tokens from "./tokens";
-export { HealthVerse__factory } from "./HealthVerse__factory";

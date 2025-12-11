@@ -28,11 +28,14 @@ export interface GoogleFitOracleInterface extends Interface {
     nameOrSignature:
       | "addVerifier"
       | "authorizedVerifiers"
+      | "getTrustedSigner"
       | "isDataVerified"
       | "owner"
       | "removeVerifier"
       | "renounceOwnership"
+      | "setTrustedSigner"
       | "transferOwnership"
+      | "trustedSigner"
       | "userVerifiedData"
       | "verifyHealthData"
   ): FunctionFragment;
@@ -41,6 +44,7 @@ export interface GoogleFitOracleInterface extends Interface {
     nameOrSignatureOrTopic:
       | "DataVerified"
       | "OwnershipTransferred"
+      | "TrustedSignerUpdated"
       | "VerifierAdded"
       | "VerifierRemoved"
   ): EventFragment;
@@ -52,6 +56,10 @@ export interface GoogleFitOracleInterface extends Interface {
   encodeFunctionData(
     functionFragment: "authorizedVerifiers",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTrustedSigner",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isDataVerified",
@@ -67,8 +75,16 @@ export interface GoogleFitOracleInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setTrustedSigner",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "trustedSigner",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "userVerifiedData",
@@ -95,6 +111,10 @@ export interface GoogleFitOracleInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getTrustedSigner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "isDataVerified",
     data: BytesLike
   ): Result;
@@ -108,7 +128,15 @@ export interface GoogleFitOracleInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setTrustedSigner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "trustedSigner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -158,6 +186,19 @@ export namespace OwnershipTransferredEvent {
   export interface OutputObject {
     previousOwner: string;
     newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace TrustedSignerUpdatedEvent {
+  export type InputTuple = [oldSigner: AddressLike, newSigner: AddressLike];
+  export type OutputTuple = [oldSigner: string, newSigner: string];
+  export interface OutputObject {
+    oldSigner: string;
+    newSigner: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -244,6 +285,8 @@ export interface GoogleFitOracle extends BaseContract {
     "view"
   >;
 
+  getTrustedSigner: TypedContractMethod<[], [string], "view">;
+
   isDataVerified: TypedContractMethod<
     [_user: AddressLike, _date: BigNumberish],
     [boolean],
@@ -260,11 +303,19 @@ export interface GoogleFitOracle extends BaseContract {
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
+  setTrustedSigner: TypedContractMethod<
+    [_newSigner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
     [void],
     "nonpayable"
   >;
+
+  trustedSigner: TypedContractMethod<[], [string], "view">;
 
   userVerifiedData: TypedContractMethod<
     [arg0: AddressLike, arg1: BigNumberish],
@@ -305,6 +356,9 @@ export interface GoogleFitOracle extends BaseContract {
     nameOrSignature: "authorizedVerifiers"
   ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
   getFunction(
+    nameOrSignature: "getTrustedSigner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "isDataVerified"
   ): TypedContractMethod<
     [_user: AddressLike, _date: BigNumberish],
@@ -321,8 +375,14 @@ export interface GoogleFitOracle extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setTrustedSigner"
+  ): TypedContractMethod<[_newSigner: AddressLike], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "trustedSigner"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "userVerifiedData"
   ): TypedContractMethod<
@@ -369,6 +429,13 @@ export interface GoogleFitOracle extends BaseContract {
     OwnershipTransferredEvent.OutputObject
   >;
   getEvent(
+    key: "TrustedSignerUpdated"
+  ): TypedContractEvent<
+    TrustedSignerUpdatedEvent.InputTuple,
+    TrustedSignerUpdatedEvent.OutputTuple,
+    TrustedSignerUpdatedEvent.OutputObject
+  >;
+  getEvent(
     key: "VerifierAdded"
   ): TypedContractEvent<
     VerifierAddedEvent.InputTuple,
@@ -404,6 +471,17 @@ export interface GoogleFitOracle extends BaseContract {
       OwnershipTransferredEvent.InputTuple,
       OwnershipTransferredEvent.OutputTuple,
       OwnershipTransferredEvent.OutputObject
+    >;
+
+    "TrustedSignerUpdated(address,address)": TypedContractEvent<
+      TrustedSignerUpdatedEvent.InputTuple,
+      TrustedSignerUpdatedEvent.OutputTuple,
+      TrustedSignerUpdatedEvent.OutputObject
+    >;
+    TrustedSignerUpdated: TypedContractEvent<
+      TrustedSignerUpdatedEvent.InputTuple,
+      TrustedSignerUpdatedEvent.OutputTuple,
+      TrustedSignerUpdatedEvent.OutputObject
     >;
 
     "VerifierAdded(address)": TypedContractEvent<

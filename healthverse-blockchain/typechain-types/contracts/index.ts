@@ -9,4 +9,3 @@ import type * as oracles from "./oracles";
 export type { oracles };
 import type * as tokens from "./tokens";
 export type { tokens };
-export type { HealthVerse } from "./HealthVerse";

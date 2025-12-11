@@ -42,9 +42,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
-      name: "HealthVerse",
+      name: "ECDSA",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HealthVerse__factory>;
+    ): Promise<Contracts.ECDSA__factory>;
+    getContractFactory(
+      name: "SafeCast",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SafeCast__factory>;
+    getContractFactory(
+      name: "Strings",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Strings__factory>;
     getContractFactory(
       name: "HealthVerse",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -102,10 +110,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
-      name: "HealthVerse",
+      name: "ECDSA",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.HealthVerse>;
+    ): Promise<Contracts.ECDSA>;
+    getContractAt(
+      name: "SafeCast",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SafeCast>;
+    getContractAt(
+      name: "Strings",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Strings>;
     getContractAt(
       name: "HealthVerse",
       address: string | ethers.Addressable,
@@ -161,9 +179,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
-      name: "HealthVerse",
+      name: "ECDSA",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.HealthVerse>;
+    ): Promise<Contracts.ECDSA>;
+    deployContract(
+      name: "SafeCast",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SafeCast>;
+    deployContract(
+      name: "Strings",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Strings>;
     deployContract(
       name: "HealthVerse",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -221,10 +247,20 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
-      name: "HealthVerse",
+      name: "ECDSA",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.HealthVerse>;
+    ): Promise<Contracts.ECDSA>;
+    deployContract(
+      name: "SafeCast",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SafeCast>;
+    deployContract(
+      name: "Strings",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Strings>;
     deployContract(
       name: "HealthVerse",
       args: any[],
