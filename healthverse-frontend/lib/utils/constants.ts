@@ -1,0 +1,32 @@
+export const HTTP_STATUS = {
+    OK: 200,
+    CREATED: 201,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    INTERNAL_ERROR: 500,
+    SERVICE_UNAVAILABLE: 503,
+} as const;
+
+export const ERROR_MESSAGES = {
+    UNAUTHORIZED: 'Authentication required',
+    FORBIDDEN: 'You do not have permission to access this resource',
+    NOT_FOUND: 'Resource not found',
+    SERVER_ERROR: 'Internal server error',
+    VALIDATION_ERROR: 'Validation failed',
+    SESSION_EXPIRED: 'Session expired. Please login again.',
+} as const;
+
+export const ERROR_CODES = {
+    AUTH_REQUIRED: 'AUTH_REQUIRED',
+    SESSION_EXPIRED: 'SESSION_EXPIRED',
+    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+    USER_EXISTS: 'USER_EXISTS',
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+    BLOCKCHAIN_NOT_CONNECTED: 'BLOCKCHAIN_NOT_CONNECTED',
+    BLOCKCHAIN_READ_ERROR: 'BLOCKCHAIN_READ_ERROR',
+    SIGNING_NOT_INITIALIZED: 'SIGNING_NOT_INITIALIZED',
+    GOOGLE_FIT_ACCESS_DENIED: 'GOOGLE_FIT_ACCESS_DENIED',
+    GOOGLE_API_RATE_LIMIT: 'GOOGLE_API_RATE_LIMIT',
+} as const;
