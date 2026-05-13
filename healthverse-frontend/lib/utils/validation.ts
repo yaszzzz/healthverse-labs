@@ -39,7 +39,7 @@ export const validateHealthData = (data: HealthData) => {
 
     // Validate each provided metric
     for (const [metric, value] of Object.entries(data)) {
-        if (Object.values(HEALTH_METRICS).includes(metric)) {
+        if ((Object.values(HEALTH_METRICS) as string[]).includes(metric)) {
             if (!validateHealthMetric(metric, value)) {
                 errors.push(`Invalid value for ${metric}: ${value}`);
             } else if (value !== undefined) {

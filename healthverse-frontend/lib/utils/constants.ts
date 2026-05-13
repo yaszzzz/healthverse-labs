@@ -15,6 +15,7 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'Resource not found',
     SERVER_ERROR: 'Internal server error',
     VALIDATION_ERROR: 'Validation failed',
+    INVALID_HEALTH_METRIC: 'Invalid health metrics',
     SESSION_EXPIRED: 'Session expired. Please login again.',
 } as const;
 
@@ -29,4 +30,27 @@ export const ERROR_CODES = {
     SIGNING_NOT_INITIALIZED: 'SIGNING_NOT_INITIALIZED',
     GOOGLE_FIT_ACCESS_DENIED: 'GOOGLE_FIT_ACCESS_DENIED',
     GOOGLE_API_RATE_LIMIT: 'GOOGLE_API_RATE_LIMIT',
+} as const;
+
+export const HEALTH_METRICS = {
+    STEPS: 'steps',
+    CALORIES: 'calories',
+    BPM_AVG: 'bpmAvg',
+    BPM_MIN: 'bpmMin',
+    BPM_MAX: 'bpmMax',
+} as const;
+
+export const HEALTH_RANGES = {
+    STEPS: {
+        MIN: 0,
+        MAX: 200000,
+    },
+    CALORIES: {
+        MIN: 0,
+        MAX: 20000,
+    },
+    HEART_RATE: {
+        MIN: 20,
+        MAX: 240,
+    },
 } as const;

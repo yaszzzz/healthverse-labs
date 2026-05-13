@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { fitness_v1, google } from 'googleapis';
 import { createOAuth2Client } from '@/lib/utils/oauth-client';
 import { logger } from '@/lib/utils/logger';
 
@@ -25,6 +25,29 @@ interface FormattedDayData {
     timestamp: number;
     day: number;
     metrics: DayMetrics;
+}
+
+interface FitPointValue {
+    intVal?: number | null;
+    fpVal?: number | null;
+}
+
+interface FitPoint {
+    value?: FitPointValue[] | null;
+}
+
+interface FitDataset {
+    dataSourceId?: string | null;
+    point?: FitPoint[] | null;
+}
+
+interface FitBucket {
+    startTimeMillis?: string | null;
+    dataset?: FitDataset[] | null;
+}
+
+interface FitAggregateResponse {
+    bucket?: FitBucket[] | null;
 }
 
 export class FitDataService {
@@ -64,7 +87,7 @@ export class FitDataService {
             endTime: new Date(now).toISOString(),
         });
 
-        const response = await fitness.users.dataset.aggregate({
+        const aggregateParams: fitness_v1.Params$Resource$Users$Dataset$Aggregate = {
             userId: 'me',
             requestBody: {
                 aggregateBy: [
@@ -74,11 +97,13 @@ export class FitDataService {
                     { dataTypeName: 'com.google.distance.delta' },
                     { dataTypeName: 'com.google.active_minutes' },
                 ],
-                bucketByTime: { durationMillis: 86400000 },
-                startTimeMillis: startTime,
-                endTimeMillis: now,
+                bucketByTime: { durationMillis: '86400000' },
+                startTimeMillis: String(startTime),
+                endTimeMillis: String(now),
             },
-        });
+        };
+
+        const response = await fitness.users.dataset.aggregate(aggregateParams);
 
         const formattedData = this.formatFitnessData(response.data, validatedDays);
 
@@ -93,63 +118,73 @@ export class FitDataService {
     /**
      * Format raw Google Fit data into structured format
      */
-    private formatFitnessData(rawData: any, days: number): FormattedDayData[] {
+    private formatFitnessData(rawData: FitAggregateResponse, days: number): FormattedDayData[] {
         if (!rawData?.bucket) {
             return [];
         }
 
-        const formattedData = rawData.bucket.map((bucket: any, index: number) => {
+        const formattedData = rawData.bucket.map((bucket, index) => {
+            const timestamp = Number(bucket.startTimeMillis || 0);
             const dayData: FormattedDayData = {
-                date: new Date(parseInt(bucket.startTimeMillis)).toISOString().split('T')[0],
-                timestamp: parseInt(bucket.startTimeMillis),
+                date: new Date(timestamp).toISOString().split('T')[0],
+                timestamp,
                 day: days - index,
                 metrics: {},
             };
 
             // Extract step count
-            const stepsDataset = bucket.dataset?.find((d: any) =>
-                d.dataSourceId.includes('step_count')
+            const stepsDataset = bucket.dataset?.find((dataset) =>
+                dataset.dataSourceId?.includes('step_count')
             );
-            if (stepsDataset?.point?.length > 0) {
-                dayData.metrics.steps = stepsDataset.point[0].value[0].intVal || 0;
+            const stepsPoint = stepsDataset?.point?.[0];
+            if (stepsPoint) {
+                dayData.metrics.steps = stepsPoint.value?.[0]?.intVal || 0;
             }
 
             // Extract heart rate data
-            const heartRateDataset = bucket.dataset?.find((d: any) =>
-                d.dataSourceId.includes('heart_rate')
+            const heartRateDataset = bucket.dataset?.find((dataset) =>
+                dataset.dataSourceId?.includes('heart_rate')
             );
-            if (heartRateDataset?.point?.length > 0) {
-                const heartRateValues = heartRateDataset.point.map((p: any) => p.value[0].fpVal);
+            if (heartRateDataset?.point?.length) {
+                const heartRateValues = heartRateDataset.point
+                    .map((point) => point.value?.[0]?.fpVal)
+                    .filter((value): value is number => value !== undefined && value !== null);
+
+                if (heartRateValues.length > 0) {
                 dayData.metrics.heartRate = {
                     average: heartRateValues.reduce((a: number, b: number) => a + b, 0) / heartRateValues.length,
                     min: Math.min(...heartRateValues),
                     max: Math.max(...heartRateValues),
                     readings: heartRateValues.length,
                 };
+                }
             }
 
             // Extract calories
-            const caloriesDataset = bucket.dataset?.find((d: any) =>
-                d.dataSourceId.includes('calories')
+            const caloriesDataset = bucket.dataset?.find((dataset) =>
+                dataset.dataSourceId?.includes('calories')
             );
-            if (caloriesDataset?.point?.length > 0) {
-                dayData.metrics.calories = caloriesDataset.point[0].value[0].fpVal || 0;
+            const caloriesPoint = caloriesDataset?.point?.[0];
+            if (caloriesPoint) {
+                dayData.metrics.calories = caloriesPoint.value?.[0]?.fpVal || 0;
             }
 
             // Extract distance
-            const distanceDataset = bucket.dataset?.find((d: any) =>
-                d.dataSourceId.includes('distance')
+            const distanceDataset = bucket.dataset?.find((dataset) =>
+                dataset.dataSourceId?.includes('distance')
             );
-            if (distanceDataset?.point?.length > 0) {
-                dayData.metrics.distance = distanceDataset.point[0].value[0].fpVal || 0;
+            const distancePoint = distanceDataset?.point?.[0];
+            if (distancePoint) {
+                dayData.metrics.distance = distancePoint.value?.[0]?.fpVal || 0;
             }
 
             // Extract active minutes
-            const activityDataset = bucket.dataset?.find((d: any) =>
-                d.dataSourceId.includes('active_minutes')
+            const activityDataset = bucket.dataset?.find((dataset) =>
+                dataset.dataSourceId?.includes('active_minutes')
             );
-            if (activityDataset?.point?.length > 0) {
-                dayData.metrics.activeMinutes = activityDataset.point[0].value[0].intVal || 0;
+            const activityPoint = activityDataset?.point?.[0];
+            if (activityPoint) {
+                dayData.metrics.activeMinutes = activityPoint.value?.[0]?.intVal || 0;
             }
 
             return dayData;

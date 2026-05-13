@@ -7,7 +7,7 @@ export default function CaseSection() {
       <div className="w-full md:pl-20">
         {/* Title */}
         <div className="px-8 text-black p-5">
-          <h1 className="text-3xl font-bold">What runs on Aptos?
+          <h1 className="text-3xl font-bold">What runs on HealthVerse?
             Just about everything</h1>
         </div>
 

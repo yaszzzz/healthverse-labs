@@ -1,8 +1,9 @@
 import crypto from 'crypto';
-import { createOAuth2Client, generateAuthUrl, getUserProfile, exchangeCodeForTokens } from '@/lib/utils/oauth-client';
+import { generateAuthUrl, getUserProfile, exchangeCodeForTokens } from '@/lib/utils/oauth-client';
 import { createSession, storeOAuthTokens, storeOAuthState, getOAuthState, deleteOAuthState, deleteSession, deleteOAuthTokens } from '@/lib/auth/session';
 import { userService } from './user';
 import { logger } from '@/lib/utils/logger';
+import prisma from '@/lib/db';
 
 export class AuthService {
     /**
@@ -69,6 +70,23 @@ export class AuthService {
             refreshToken: tokens.refresh_token || undefined,
             expiryDate: tokens.expiry_date || undefined,
             scope: tokens.scope || undefined,
+        });
+
+        await prisma.oAuthToken.deleteMany({
+            where: {
+                userId: user.id,
+                provider: 'google',
+            },
+        });
+
+        await prisma.oAuthToken.create({
+            data: {
+                userId: user.id,
+                provider: 'google',
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token || '',
+                expiryDate: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
+            },
         });
 
         logger.info('OAuth2 authentication successful', {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, getOAuthTokens } from './session';
+import prisma from '@/lib/db';
 
 export interface AuthenticatedRequest extends NextRequest {
     user?: {
@@ -37,7 +38,27 @@ export async function requireAuth(
         );
     }
 
-    const tokens = await getOAuthTokens();
+    let tokens = await getOAuthTokens();
+
+    if (!tokens?.accessToken) {
+        const storedTokens = await prisma.oAuthToken.findFirst({
+            where: {
+                userId: session.userId,
+                provider: 'google',
+            },
+            orderBy: {
+                updatedAt: 'desc',
+            },
+        });
+
+        if (storedTokens) {
+            tokens = {
+                accessToken: storedTokens.accessToken,
+                refreshToken: storedTokens.refreshToken,
+                expiryDate: storedTokens.expiryDate?.getTime(),
+            };
+        }
+    }
 
     // Check if tokens are expired
     if (tokens?.expiryDate && Date.now() > tokens.expiryDate) {
@@ -79,7 +100,27 @@ export async function optionalAuth(): Promise<{
         return { isAuthenticated: false };
     }
 
-    const tokens = await getOAuthTokens();
+    let tokens = await getOAuthTokens();
+
+    if (!tokens?.accessToken) {
+        const storedTokens = await prisma.oAuthToken.findFirst({
+            where: {
+                userId: session.userId,
+                provider: 'google',
+            },
+            orderBy: {
+                updatedAt: 'desc',
+            },
+        });
+
+        if (storedTokens) {
+            tokens = {
+                accessToken: storedTokens.accessToken,
+                refreshToken: storedTokens.refreshToken,
+                expiryDate: storedTokens.expiryDate?.getTime(),
+            };
+        }
+    }
 
     // Check if tokens are expired
     if (tokens?.expiryDate && Date.now() > tokens.expiryDate) {

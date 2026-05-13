@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { requireAuth } from '@/lib/auth/middleware';
-import { getOAuthTokens } from '@/lib/auth/session';
 import { fitDataService } from '@/lib/services/fitdata';
 import { successResponse, errorResponse, validationError } from '@/lib/utils/response';
 import { logger } from '@/lib/utils/logger';
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const tokens = await getOAuthTokens();
+        const tokens = authResult.tokens;
 
         if (!tokens?.accessToken) {
             return errorResponse(

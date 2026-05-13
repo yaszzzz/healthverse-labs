@@ -68,7 +68,7 @@ export async function deleteSession() {
  * Store OAuth tokens in a separate cookie
  */
 export async function storeOAuthTokens(tokens: OAuthSession) {
-    const token = await new SignJWT(tokens)
+    const token = await new SignJWT({ ...tokens })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('7d')

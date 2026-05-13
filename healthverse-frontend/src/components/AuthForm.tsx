@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 interface AuthFormProps {
     type: 'login' | 'register';
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: { email: string; password: string }) => Promise<void>;
     isLoading?: boolean;
 }
 
@@ -17,28 +17,29 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading = false }
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
         try {
             await onSubmit({ email, password });
-        } catch (err: any) {
-            setError(err.message || 'An error occurred');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
         }
     };
 
     const handleGoogleLogin = () => {
-        // Redirect to backend Google Auth endpoint (port 3000)
-        window.location.href = 'http://localhost:3000/auth/google';
+        window.location.href = '/api/auth/google';
     };
 
     return (
-        <div className="w-full max-w-md p-8 space-y-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl animate-fadeIn">
-            <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-white">
+        <div className="w-full max-w-[460px] bg-[#241F29] text-white border border-white/10 rounded-[28px] shadow-[0_30px_90px_rgba(36,31,41,0.28)] p-6 sm:p-8 animate-fadeIn">
+            <div className="mb-8">
+                <p className="text-xs uppercase tracking-[0.24em] text-[#D8CDE1]/70">HealthVerse Foundation</p>
+                <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight">
                     {type === 'login' ? 'Welcome Back' : 'Create Account'}
                 </h2>
-                <p className="mt-2 text-sm text-gray-400">
+                <p className="mt-3 text-sm leading-6 text-[#E8E3EE]/72">
                     {type === 'login'
-                        ? 'Enter your credentials to access your health data'
-                        : 'Join HealthVerse and take control of your wellbeing'}
+                        ? 'Masuk untuk membuka dashboard kesehatan dan sinkronisasi Google Fit.'
+                        : 'Buat akun HealthVerse untuk menyimpan akses kesehatan secara aman.'}
                 </p>
             </div>
 
@@ -46,9 +47,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading = false }
                 <button
                     onClick={handleGoogleLogin}
                     type="button"
-                    className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-black bg-white hover:bg-gray-100 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full flex items-center justify-center px-4 py-3.5 border border-white/15 text-sm font-medium rounded-full text-[#241F29] bg-[#F8F4EC] hover:bg-white transition-colors"
                 >
-                    <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24" aria-hidden="true">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                             fill="#4285F4"
@@ -66,27 +67,27 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading = false }
                             fill="#EA4335"
                         />
                     </svg>
-                    {type === 'login' ? 'Sign in with Google' : 'Sign up with Google'}
+                    {type === 'login' ? 'Sign in with Google Fit' : 'Sign up with Google Fit'}
                 </button>
 
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-600/50"></div>
+                        <div className="w-full border-t border-white/10" />
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-[#0a0a0a] text-gray-500">Or continue with</span>
+                        <span className="px-3 bg-[#241F29] text-[#E8E3EE]/55">Or continue with</span>
                     </div>
                 </div>
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     {error && (
-                        <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
+                        <div className="p-3 text-sm text-red-200 bg-red-500/15 border border-red-300/20 rounded-2xl">
                             {error}
                         </div>
                     )}
 
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                        <label htmlFor="email" className="block text-sm font-medium text-[#E8E3EE]/82">
                             Email address
                         </label>
                         <input
@@ -97,13 +98,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading = false }
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                            className="mt-2 block w-full px-4 py-3 bg-white/7 border border-white/12 rounded-2xl text-white placeholder-[#E8E3EE]/35 focus:outline-none focus:ring-2 focus:ring-[#B9A6C5] focus:border-[#B9A6C5] transition-colors"
                             placeholder="you@example.com"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+                        <label htmlFor="password" className="block text-sm font-medium text-[#E8E3EE]/82">
                             Password
                         </label>
                         <input
@@ -114,33 +115,27 @@ const AuthForm: React.FC<AuthFormProps> = ({ type, onSubmit, isLoading = false }
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
-                            placeholder="••••••••"
+                            className="mt-2 block w-full px-4 py-3 bg-white/7 border border-white/12 rounded-2xl text-white placeholder-[#E8E3EE]/35 focus:outline-none focus:ring-2 focus:ring-[#B9A6C5] focus:border-[#B9A6C5] transition-colors"
+                            placeholder="Password"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-full text-sm font-semibold text-[#241F29] bg-[#F8F4EC] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#241F29] focus:ring-[#F8F4EC] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? (
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        ) : null}
-                        {type === 'login' ? 'Sign in' : 'Create account'}
+                        {isLoading ? 'Processing...' : type === 'login' ? 'Sign in' : 'Create account'}
                     </button>
                 </form>
 
                 <div className="text-center text-sm">
-                    <span className="text-gray-400">
+                    <span className="text-[#E8E3EE]/65">
                         {type === 'login' ? "Don't have an account? " : "Already have an account? "}
                     </span>
                     <Link
                         href={type === 'login' ? '/register' : '/login'}
-                        className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+                        className="font-medium text-white underline decoration-white/30 underline-offset-4 hover:decoration-white transition-colors"
                     >
                         {type === 'login' ? 'Sign up' : 'Sign in'}
                     </Link>

@@ -30,9 +30,9 @@ export default function StatsSection() {
         <div className="space-y-6 max-w-xl">
           <StatsRotatingText />
           <p className="max-w-md text-sm sm:text-base opacity-80 leading-relaxed mt-10">
-            While other chains fork, fail, or fall behind, Aptos runs quietly at
-            enterprise scale. Zero downtime. Sub-second finality. This is
-            performance you can build on.
+            HealthVerse turns wellness activity into private, verifiable records
+            that users can review, sync, and carry across connected health
+            experiences.
           </p>
         </div>
       </div>

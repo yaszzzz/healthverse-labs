@@ -250,7 +250,7 @@ function Dropdown({
     { title: string; itemsLeft: Item[]; itemsMid: Item[]; itemsRight: Item[] }
   > = {
     about: {
-      title: "About Aptos Foundation",
+      title: "About HealthVerse Foundation",
       itemsLeft: [
         { t: "News", d: "Blogs, insights, and announcements" },
         { t: "Whitepaper", d: "Core concepts behind the protocol" },
@@ -263,14 +263,14 @@ function Dropdown({
       ],
       itemsRight: [
         { t: "Media Kit", d: "Logos & branding" },
-        { t: "Careers", d: "Join the Aptos team" },
+        { t: "Careers", d: "Join the HealthVerse team" },
       ],
     },
     ecosystem: {
-      title: "Aptos Ecosystem",
+      title: "HealthVerse Ecosystem",
       itemsLeft: [
-        { t: "Explore Projects", d: "All apps built on Aptos" },
-        { t: "Wallets", d: "Start your Aptos journey" },
+        { t: "Explore Projects", d: "All apps built on HealthVerse" },
+        { t: "Health Apps", d: "Start your HealthVerse journey" },
       ],
       itemsMid: [
         { t: "DeFi", d: "Trade, lend, borrow" },
@@ -283,7 +283,7 @@ function Dropdown({
       ],
     },
     build: {
-      title: "Build on Aptos",
+      title: "Build on HealthVerse",
       itemsLeft: [
         { t: "Docs", d: "Developer documentation" },
         { t: "Move Language", d: "Smart contract language" },
